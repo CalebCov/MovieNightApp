@@ -1,10 +1,10 @@
 # import section
+# this file handles the database connection
 
 import mysql.connector
 from mysql.connector import Error
 import config
 
-# initialize connection
 def dbConnection():
     connection = None
     try:
@@ -19,7 +19,3 @@ def dbConnection():
         print(f"Checkout error: '{E}'.")
 
     return connection
-
-
-# test connection to database
-connection = dbConnection()
