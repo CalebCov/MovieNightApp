@@ -41,4 +41,19 @@ def add_friend():
     cursor.execute(sql_qurey, (firstname, lastname))
     connection.commit()
 
-    return jsonify(message ="Welcome {} {}.".format(firstname, lastname))
+    return jsonify(message ="Welcome {} {} to Movie Night.".format(firstname, lastname))
+
+# request to update a friends data
+@api.route('api/updatefriend/<int:id>', methods = ['PUT'])
+def update_friend(id):
+    data = request.get_json()
+    firstname = data['firstname']
+    lastname = data['lastname']
+
+    connection = dbConnection()
+    cursor = connection.cursor(dictionary=True)
+    sql_query = "UPDATE friend SET firstname = %s, lastname = %s WHERE id =%s"
+    cursor.execute(sql_query, (firstname, lastname, id))
+    connection.commit()
+
+    return jsonify(messeage="You name was updated successfully.")
