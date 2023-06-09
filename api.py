@@ -1,6 +1,7 @@
 # this file is where all the api routes are to query the database
 
 from flask import Blueprint, jsonify
+from flask import request
 from db_connection import dbConnection
 
 # the Blueprint class allows you to organize routes, views, and other modular structures. Helps to create scalable and maintainable Flask apps.
@@ -8,7 +9,7 @@ api = Blueprint('api', __name__)
 
 
 # request to return all names in the friends table.
-@api.route('/friends', methods=['GET'])
+@api.route('/api/friends', methods=['GET'])
 def friend_list():
     connection = dbConnection()
     cursor = connection.cursor(dictionary=True)
@@ -18,7 +19,7 @@ def friend_list():
     return jsonify(rows)
 
 # request to delete a friend from the friends table
-@api.route('/removefriend/<int:id>', methods = ['DELETE'])
+@api.route('/api/removefriend/<int:id>', methods = ['DELETE'])
 def remove_friend(id):
     connection = dbConnection()
     cursor = connection.cursor(dictionary=True)
@@ -27,5 +28,17 @@ def remove_friend(id):
     connection.commit()
     return jsonify(message="Friends come and go.")
     
+# request to add a freind to the friends table
+@api.route('/api/addfriend', methods = ['POST'])
+def add_friend():
+    data = request.get_json()
+    firstname = data ['firstname']
+    lastname = data['lastname']
 
-    
+    connection = dbConnection()
+    cursor = connection.cursor()
+    sql_qurey = "INSERT INTO friend (firstname, lastname) VALUES (%s, %s)"
+    cursor.execute(sql_qurey, (firstname, lastname))
+    connection.commit()
+
+    return jsonify(message ="Welcome {} {}.".format(firstname, lastname))
