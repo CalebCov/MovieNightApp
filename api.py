@@ -77,3 +77,40 @@ def update_friend(id):
     connection.commit()
 
     return jsonify(messeage="Name updated successfully.")
+
+# return all movies on the movielist table and join them to their respective user
+@api.route('/api/movielist', methods=['GET'])
+def movie_list():
+    connection = dbConnection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Create a list of movie column names
+    movie_columns = [f"movie{i}" for i in range(1, 11)]
+
+    # Generate the query dynamically
+    movie_conditions = " OR ".join([f"{column} IS NOT NULL" for column in movie_columns])
+    movie_select = ", ".join([f"{column}" for column in movie_columns])
+    sql_query = f"""
+    SELECT friend.firstname, friend.lastname, {movie_select}
+    FROM movielist
+    INNER JOIN friend ON friend.id = movielist.friendid
+    WHERE ({movie_conditions})
+    ORDER BY friend.id
+    """
+
+    # Execute the query and fetch the results
+    cursor.execute(sql_query)
+    rows = cursor.fetchall()
+
+    return jsonify(rows)
+
+
+
+
+
+
+
+
+
+
+
