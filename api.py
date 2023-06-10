@@ -23,10 +23,22 @@ def friend_list():
 def remove_friend(id):
     connection = dbConnection()
     cursor = connection.cursor(dictionary=True)
-    sql_query = "DELETE FROM friend WHERE id = %s"
-    cursor.execute(sql_query, (id,))
+
+    # get the name before deleting
+    select_query = "SELECT firstname, lastname FROM friend WHERE id = %s"
+    cursor.execute(select_query, (id,))
+    friend = cursor.fetchone()
+
+    # delete the friend
+    delete_query = "DELETE FROM friend WHERE id = %s"
+    cursor.execute(delete_query, (id,))
     connection.commit()
-    return jsonify(message="Friends come and go.")
+
+    if friend:
+        message = "{} {} has been removed".format(friend['firstname'], friend['lastname'])
+        return jsonify(message=message)
+    else:
+        return jsonify(message="User not found")
     
 # request to add a freind to the friends table
 @api.route('/api/addfriend', methods = ['POST'])
@@ -44,7 +56,7 @@ def add_friend():
     return jsonify(message ="Welcome {} {} to Movie Night.".format(firstname, lastname))
 
 # request to update a friends data
-@api.route('api/updatefriend/<int:id>', methods = ['PUT'])
+@api.route('/api/updatefriend/<int:id>', methods = ['PUT'])
 def update_friend(id):
     data = request.get_json()
     firstname = data['firstname']
