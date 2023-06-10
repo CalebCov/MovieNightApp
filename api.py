@@ -59,13 +59,21 @@ def add_friend():
 @api.route('/api/updatefriend/<int:id>', methods = ['PUT'])
 def update_friend(id):
     data = request.get_json()
-    firstname = data['firstname']
-    lastname = data['lastname']
+    new_firstname = data.get('firstname')
+    new_lastname = data.get('lastname')
 
     connection = dbConnection()
     cursor = connection.cursor(dictionary=True)
-    sql_query = "UPDATE friend SET firstname = %s, lastname = %s WHERE id =%s"
-    cursor.execute(sql_query, (firstname, lastname, id))
+
+# if statements give you the option to update names separately
+    if new_firstname:
+        sql_query = "UPDATE friend SET firstname = %s WHERE id = %s"
+        cursor.execute(sql_query, (new_firstname, id))
+   
+    if new_lastname:
+        sql_query = "UPDATE friend SET lastname = %s WHERE id =%s"
+        cursor.execute(sql_query, (new_lastname, id))
+
     connection.commit()
 
-    return jsonify(messeage="You name was updated successfully.")
+    return jsonify(messeage="Name updated successfully.")
